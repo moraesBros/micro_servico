@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: tripuser
+      POSTGRES_PASSWORD: trippass
+      POSTGRES_DB: tripdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - trip-net
+
+  trip-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://tripuser:trippass@db:5432/tripdb
+    depends_on:
+      - db
+    networks:
+      - trip-net
+
+volumes:
+  postgres-data:
+
+networks:
+  trip-net:
